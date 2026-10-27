@@ -39,6 +39,8 @@ interface AppContextType {
   setSidebarCollapsed: (collapsed: boolean | ((prev: boolean) => boolean)) => void;
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
+  helpOpen: boolean;
+  setHelpOpen: (open: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -54,6 +56,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [selectedFarmId, setSelectedFarmId] = useState<string>('farm-1');
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [searchOpen, setSearchOpen] = useState<boolean>(false);
+  const [helpOpen, setHelpOpen] = useState<boolean>(false);
 
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
     try {
@@ -139,6 +142,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSidebarCollapsed,
         searchOpen,
         setSearchOpen,
+        helpOpen,
+        setHelpOpen,
       }}
     >
       {children}

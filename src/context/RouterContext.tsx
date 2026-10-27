@@ -41,15 +41,7 @@ function computeBreadcrumbs(path: string, params: Record<string, string>): { lab
 
   const crumbs: { label: string; path?: string }[] = [{ label: 'Início', path: '/dashboard' }];
 
-  if (clean === '/farms') {
-    crumbs.push({ label: 'Explorações Agrícolas' });
-  } else if (clean === '/farms/new') {
-    crumbs.push({ label: 'Explorações', path: '/farms' });
-    crumbs.push({ label: 'Nova Exploração' });
-  } else if (params.farmId) {
-    crumbs.push({ label: 'Explorações', path: '/farms' });
-    crumbs.push({ label: `Exploração (${params.farmId})` });
-  } else if (clean === '/map') {
+  if (clean === '/map') {
     crumbs.push({ label: 'Mapa Geoespacial' });
   } else if (clean === '/monitoring') {
     crumbs.push({ label: 'Monitorização de Culturas' });

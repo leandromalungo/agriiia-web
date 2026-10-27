@@ -17,6 +17,7 @@ import {
   ChevronRight,
   LogOut,
   ShieldCheck,
+  HelpCircle,
 } from 'lucide-react';
 
 export function Sidebar() {
@@ -29,18 +30,13 @@ export function Sidebar() {
     userProfile,
     setIsAuthenticated,
     showToast,
+    setHelpOpen,
   } = useApp();
 
   const activeAlertsCount = alerts.filter((a) => a.status === 'Ativo').length;
 
   const navItems = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    {
-      label: 'Explorações',
-      path: '/farms',
-      icon: Sprout,
-      badge: undefined,
-    },
     { label: 'Mapa', path: '/map', icon: Map },
     {
       label: 'Monitorização',
@@ -76,34 +72,31 @@ export function Sidebar() {
   };
 
   const isCurrentActive = (path: string) => {
-    if (path === '/farms' && (currentPath.startsWith('/farms') || currentPath === '/farms/new')) {
-      return true;
-    }
     return currentPath === path;
   };
 
   return (
     <aside
       className={`relative flex flex-col bg-white border-r border-[#E5E7EB] h-screen transition-all duration-300 z-30 select-none ${
-        sidebarCollapsed ? 'w-20' : 'w-64'
+        sidebarCollapsed ? 'w-16' : 'w-56'
       }`}
     >
       {/* Brand Header */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-[#E5E7EB]">
+      <div className="flex items-center justify-between h-14 px-3.5 border-b border-[#E5E7EB]">
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2.5 overflow-hidden text-left group"
+          className="flex items-center gap-2 overflow-hidden text-left group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#65A30D] to-[#365314] flex items-center justify-center text-white shadow-md shadow-lime-900/10 shrink-0 group-hover:scale-105 transition-transform">
-            <Sprout className="w-6 h-6 text-[#ECFCCB]" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#65A30D] to-[#365314] flex items-center justify-center text-white shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+            <Sprout className="w-5 h-5 text-[#ECFCCB]" />
           </div>
           {!sidebarCollapsed && (
             <div className="flex flex-col leading-none">
-              <span className="text-xl font-extrabold tracking-tight text-[#1F2937]">
+              <span className="text-lg font-black tracking-tight text-[#1F2937]">
                 Agri<span className="text-[#65A30D]">ia</span>
               </span>
-              <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-0.5">
-                Agricultura Inteligente
+              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">
+                Precisão Agrícola
               </span>
             </div>
           )}
@@ -166,8 +159,22 @@ export function Sidebar() {
         })}
       </nav>
 
+      {/* Quick Help Guide Button */}
+      <div className="px-3 pb-2">
+        <button
+          onClick={() => setHelpOpen(true)}
+          className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-xs font-semibold text-lime-900 bg-lime-50/80 hover:bg-lime-100 border border-lime-200/80 transition-colors ${
+            sidebarCollapsed ? 'justify-center' : ''
+          }`}
+          title="Manual de Ajuda & Guia Agronómico"
+        >
+          <HelpCircle className="w-4 h-4 text-[#65A30D] shrink-0" />
+          {!sidebarCollapsed && <span>Ajuda & Dicionário</span>}
+        </button>
+      </div>
+
       {/* User Profile & Logout Section */}
-      <div className="p-3 border-t border-[#E5E7EB] bg-gray-50/50">
+      <div className="p-2.5 border-t border-[#E5E7EB] bg-gray-50/50">
         <div
           onClick={() => navigate('/settings')}
           className={`flex items-center gap-3 p-2 rounded-xl hover:bg-white hover:shadow-xs border border-transparent hover:border-gray-200/60 cursor-pointer transition-all ${

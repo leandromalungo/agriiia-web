@@ -5,9 +5,6 @@ import { AppLayout } from './components/layout/AppLayout';
 
 // Pages
 import { DashboardPage } from './components/dashboard/DashboardPage';
-import { FarmsPage } from './components/farms/FarmsPage';
-import { NewFarmPage } from './components/farms/NewFarmPage';
-import { FarmDetailPage } from './components/farms/FarmDetailPage';
 import { MapPage } from './components/maps/MapPage';
 import { MonitoringPage } from './components/monitoring/MonitoringPage';
 import { AiAssistantPage } from './components/ai-assistant/AiAssistantPage';
@@ -38,17 +35,8 @@ function AppRouterSwitch() {
   return (
     <AppLayout>
       {(() => {
-        if (currentPath === '/dashboard' || currentPath === '/') {
+        if (currentPath === '/dashboard' || currentPath === '/' || currentPath.startsWith('/farms')) {
           return <DashboardPage />;
-        }
-        if (currentPath === '/farms/new') {
-          return <NewFarmPage />;
-        }
-        if (params.farmId) {
-          return <FarmDetailPage />;
-        }
-        if (currentPath === '/farms') {
-          return <FarmsPage />;
         }
         if (currentPath === '/map') {
           return <MapPage />;

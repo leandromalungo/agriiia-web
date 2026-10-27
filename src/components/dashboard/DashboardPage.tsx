@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useRouter } from '../../context/RouterContext';
 import { DemoBadge } from '../ui/DemoBadge';
+import { HelpTooltip } from '../ui/HelpTooltip';
 import {
   Sprout,
   LandPlot,
@@ -16,6 +17,8 @@ import {
   Sparkles,
   MapPin,
   ChevronRight,
+  HelpCircle,
+  Layers,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -33,11 +36,12 @@ import { ActivityService } from '../../lib/services/activityService';
 import { AlertService } from '../../lib/services/alertService';
 
 export function DashboardPage() {
-  const { farms, activities, alerts, refreshData, showToast } = useApp();
+  const { farms, activities, alerts, refreshData, showToast, setHelpOpen } = useApp();
   const { navigate } = useRouter();
 
   // Metrics calculation
   const totalFarms = farms.length;
+  const totalPlots = farms.reduce((sum, f) => sum + f.plots.length, 0);
   const totalHectares = farms.reduce((sum, f) => sum + f.areaHectares, 0);
   const activeAlerts = alerts.filter((a) => a.status === 'Ativo');
   const avgHealth = Math.round(
@@ -77,146 +81,178 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Top Banner Notice */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-lime-900 via-lime-800 to-[#365314] text-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-lime-500/20 border border-lime-400/30 flex items-center justify-center shrink-0">
+      <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-lime-900 via-lime-800 to-[#365314] text-white shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-lime-500/20 border border-lime-400/30 flex items-center justify-center shrink-0">
             <Sprout className="w-5 h-5 text-lime-300" />
           </div>
           <div>
-            <h2 className="text-base font-bold tracking-tight">
+            <h2 className="text-sm sm:text-base font-bold tracking-tight">
               Safra 2026/2027 — Planalto Central e Norte de Angola
             </h2>
-            <p className="text-xs text-lime-200/90 mt-0.5">
-              Monitorização ativa para 3 províncias (Huambo, Huíla, Malanje) com imagens Sentinel-2.
+            <p className="text-[11px] sm:text-xs text-lime-200/90 mt-0.5">
+              Monitorização ativa para 3 regiões agrícolas (Huambo, Huíla, Malanje) com imagens Sentinel-2.
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-center">
           <DemoBadge />
           <button
-            onClick={() => navigate('/farms/new')}
-            className="px-3.5 py-2 text-xs font-bold bg-[#65A30D] hover:bg-lime-500 text-white rounded-xl shadow-xs transition-colors"
+            onClick={() => setHelpOpen(true)}
+            className="px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded-lg border border-white/20 transition-colors flex items-center gap-1.5"
+            title="Abrir glossário de índices e manual de utilização"
           >
-            + Adicionar Exploração
+            <HelpCircle className="w-3.5 h-3.5 text-lime-300" />
+            <span>Guia & Dicionário</span>
           </button>
         </div>
       </div>
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Farms */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {/* Total Plots Monitored */}
         <div
-          onClick={() => navigate('/farms')}
-          className="p-5 rounded-2xl bg-white border border-[#E5E7EB] hover:border-lime-300 hover:shadow-md transition-all cursor-pointer group"
+          onClick={() => navigate('/map')}
+          className="p-4 rounded-xl bg-white border border-[#E5E7EB] hover:border-lime-300 hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Total de Explorações
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-lime-50 text-[#65A30D] flex items-center justify-center group-hover:bg-[#65A30D] group-hover:text-white transition-colors">
-              <LandPlot className="w-5 h-5" />
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Parcelas Georreferenciadas
+              </span>
+              <HelpTooltip
+                title="Parcelas Agrícolas Georreferenciadas"
+                content="Polígonos vetoriais delimitados por GPS e satélite para as culturas ativas de milho, soja, feijão, trigo, batata e mandioca."
+              />
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-lime-50 text-[#65A30D] flex items-center justify-center group-hover:bg-[#65A30D] group-hover:text-white transition-colors">
+              <Layers className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-gray-900">{totalFarms}</span>
-            <span className="text-xs font-semibold text-[#65A30D] flex items-center">
-              <ArrowUpRight className="w-3.5 h-3.5" /> 100% ativas
+          <div className="mt-2.5 flex items-baseline gap-2">
+            <span className="text-2xl font-extrabold text-gray-900">{totalPlots}</span>
+            <span className="text-[11px] font-semibold text-[#65A30D] flex items-center">
+              <ArrowUpRight className="w-3 h-3" /> 100% monitorizadas
             </span>
           </div>
-          <p className="text-xs text-gray-500 mt-1">Huambo, Huíla e Malanje</p>
+          <p className="text-[11px] text-gray-500 mt-1">Huambo, Huíla e Malanje</p>
         </div>
 
         {/* Total Area */}
         <div
-          onClick={() => navigate('/farms')}
-          className="p-5 rounded-2xl bg-white border border-[#E5E7EB] hover:border-lime-300 hover:shadow-md transition-all cursor-pointer group"
+          onClick={() => navigate('/map')}
+          className="p-4 rounded-xl bg-white border border-[#E5E7EB] hover:border-lime-300 hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Área Monitorizada
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
-              <Sprout className="w-5 h-5" />
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Área Total Monitorizada
+              </span>
+              <HelpTooltip
+                title="Área Monitorizada"
+                content="Área agregada com varredura radiométrica semanal, estimativa de biomassa e cálculo de balanço hídrico."
+              />
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <LandPlot className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-gray-900">
+          <div className="mt-2.5 flex items-baseline gap-2">
+            <span className="text-2xl font-extrabold text-gray-900">
               {formatHectares(totalHectares)}
             </span>
           </div>
-          <p className="text-xs text-gray-500 mt-1">11 parcelas agrícolas georreferenciadas</p>
+          <p className="text-[11px] text-gray-500 mt-1">11 talhões em regime intensivo</p>
         </div>
 
         {/* Crops Health Index */}
         <div
           onClick={() => navigate('/monitoring')}
-          className="p-5 rounded-2xl bg-white border border-[#E5E7EB] hover:border-lime-300 hover:shadow-md transition-all cursor-pointer group"
+          className="p-4 rounded-xl bg-white border border-[#E5E7EB] hover:border-lime-300 hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Índice de Saúde (NDVI)
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <Activity className="w-5 h-5" />
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Índice de Saúde (NDVI)
+              </span>
+              <HelpTooltip
+                title="Índice NDVI (Normalized Difference Vegetation Index)"
+                content="Média ponderada do vigor vegetativo (0.0 a 1.0). Acima de 0.60 representa copas fechadas, fotossíntese vigorosa e bom fornecimento hídrico."
+              />
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <Activity className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-gray-900">{avgHealth}%</span>
-            <span className="text-xs font-semibold text-emerald-600 flex items-center">
-              <TrendingUp className="w-3.5 h-3.5 mr-0.5" /> Vigor Bom
+          <div className="mt-2.5 flex items-baseline gap-2">
+            <span className="text-2xl font-extrabold text-gray-900">{avgHealth}%</span>
+            <span className="text-[11px] font-semibold text-emerald-600 flex items-center">
+              <TrendingUp className="w-3 h-3 mr-0.5" /> Vigor Bom
             </span>
           </div>
-          <p className="text-xs text-gray-500 mt-1">NDVI médio ponderado de 0.78</p>
+          <p className="text-[11px] text-gray-500 mt-1">NDVI médio ponderado de 0.78</p>
         </div>
 
         {/* Active Alerts */}
         <div
           onClick={() => navigate('/notifications')}
-          className="p-5 rounded-2xl bg-white border border-[#E5E7EB] hover:border-amber-300 hover:shadow-md transition-all cursor-pointer group"
+          className="p-4 rounded-xl bg-white border border-[#E5E7EB] hover:border-amber-300 hover:shadow-xs transition-all cursor-pointer group"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Alertas Prioritários
-            </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
-              <AlertTriangle className="w-5 h-5" />
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                Alertas Prioritários
+              </span>
+              <HelpTooltip
+                title="Alertas Fitossanitários e Hídricos"
+                content="Notificações ativas geradas pelos algoritmos de detecção de anomalias por satélite e modelos de déficit hídrico no solo."
+              />
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+              <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-3xl font-extrabold text-amber-600">
+          <div className="mt-2.5 flex items-baseline gap-2">
+            <span className="text-2xl font-extrabold text-amber-600">
               {activeAlerts.length}
             </span>
-            <span className="text-xs font-medium text-gray-600">requerem atenção</span>
+            <span className="text-[11px] font-medium text-gray-600">requerem atenção</span>
           </div>
-          <p className="text-xs text-rose-500 font-medium mt-1">
+          <p className="text-[11px] text-rose-500 font-medium mt-1">
             1 crítico (Malanje) • 1 alto (Huambo)
           </p>
         </div>
       </div>
 
       {/* Main Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Vegetative Evolution NDVI Chart */}
-        <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E5E7EB] shadow-2xs">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-[#65A30D]" />
-                Evolução do Vigor Vegetativo (NDVI Satélite)
-              </h3>
-              <p className="text-xs text-gray-500">Média multiespectral mensal das explorações</p>
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-900 flex items-center gap-1.5">
+                  <TrendingUp className="w-4 h-4 text-[#65A30D]" />
+                  Evolução do Vigor Vegetativo (NDVI Satélite)
+                </h3>
+                <HelpTooltip
+                  title="Curva Multitemporal NDVI"
+                  content="Acompanhamento mensal da reflectância na banda do infravermelho próximo (NIR) comparado ao vermelho (Red) via Sentinel-2 (Copernicus)."
+                />
+              </div>
+              <p className="text-[11px] text-gray-500">Média multiespectral mensal das operações regionais</p>
             </div>
             <button
               onClick={() => navigate('/satellite')}
-              className="text-xs font-semibold text-[#65A30D] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#65A30D] hover:underline flex items-center gap-1 shrink-0"
             >
-              Ver satélite <ChevronRight className="w-3.5 h-3.5" />
+              Satélite <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="h-64 w-full">
+          <div className="h-48 sm:h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={ndviTrendData}>
                 <defs>
@@ -230,15 +266,15 @@ export function DashboardPage() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                <XAxis dataKey="month" stroke="#9CA3AF" fontSize={12} />
-                <YAxis stroke="#9CA3AF" fontSize={12} domain={[0.3, 1.0]} />
+                <XAxis dataKey="month" stroke="#9CA3AF" fontSize={11} />
+                <YAxis stroke="#9CA3AF" fontSize={11} domain={[0.3, 1.0]} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#FFFFFF',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     border: '1px solid #E5E7EB',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    fontSize: '12px',
+                    fontSize: '11px',
                   }}
                   formatter={(val: any) => [`${Number(val).toFixed(2)} (NDVI)`, '']}
                 />
@@ -263,49 +299,55 @@ export function DashboardPage() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex items-center justify-center gap-6 mt-3 text-xs text-gray-600">
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#65A30D]"></span> Vale do Cavaco (Milho/Soja)
+          <div className="flex items-center justify-center gap-5 mt-2 text-[11px] text-gray-600">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#65A30D]"></span> Vale do Cavaco (Milho/Soja)
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#0ea5e9]"></span> Lubango (Batata/Trigo)
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#0ea5e9]"></span> Lubango (Batata/Trigo)
             </span>
           </div>
         </div>
 
         {/* Rainfall & Climate Chart */}
-        <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs">
-          <div className="flex items-center justify-between mb-4">
+        <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E5E7EB] shadow-2xs">
+          <div className="flex items-center justify-between mb-3">
             <div>
-              <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                <CloudRain className="w-4 h-4 text-blue-600" />
-                Regime Pluviométrico (Precipitação Acumulada em mm)
-              </h3>
-              <p className="text-xs text-gray-500">
+              <div className="flex items-center gap-1.5">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-900 flex items-center gap-1.5">
+                  <CloudRain className="w-4 h-4 text-blue-600" />
+                  Regime Pluviométrico (Precipitação em mm)
+                </h3>
+                <HelpTooltip
+                  title="Pluviometria Acumulada"
+                  content="Compara a precipitação real medida em estações meteorológicas locais com a série histórica climatológica normal de 10 anos."
+                />
+              </div>
+              <p className="text-[11px] text-gray-500">
                 Precipitação registada vs média histórica dos últimos 10 anos
               </p>
             </div>
             <button
               onClick={() => navigate('/weather')}
-              className="text-xs font-semibold text-[#65A30D] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#65A30D] hover:underline flex items-center gap-1 shrink-0"
             >
-              Ver clima <ChevronRight className="w-3.5 h-3.5" />
+              Clima <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="h-64 w-full">
+          <div className="h-48 sm:h-52 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={rainfallData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                <XAxis dataKey="month" stroke="#9CA3AF" fontSize={12} />
-                <YAxis stroke="#9CA3AF" fontSize={12} unit="mm" />
+                <XAxis dataKey="month" stroke="#9CA3AF" fontSize={11} />
+                <YAxis stroke="#9CA3AF" fontSize={11} unit="mm" />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#FFFFFF',
-                    borderRadius: '12px',
+                    borderRadius: '10px',
                     border: '1px solid #E5E7EB',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    fontSize: '12px',
+                    fontSize: '11px',
                   }}
                   formatter={(val: any) => [`${val} mm`, '']}
                 />
@@ -313,23 +355,23 @@ export function DashboardPage() {
                   dataKey="real"
                   name="Precipitação 2026"
                   fill="#3b82f6"
-                  radius={[4, 4, 0, 0]}
+                  radius={[3, 3, 0, 0]}
                 />
                 <Bar
                   dataKey="historico"
                   name="Média Histórica"
                   fill="#cbd5e1"
-                  radius={[4, 4, 0, 0]}
+                  radius={[3, 3, 0, 0]}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex items-center justify-center gap-6 mt-3 text-xs text-gray-600">
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-blue-500"></span> Precipitação Real 2026
+          <div className="flex items-center justify-center gap-5 mt-2 text-[11px] text-gray-600">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded bg-blue-500"></span> Precipitação Real 2026
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-slate-300"></span> Média Histórica Climatológica
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded bg-slate-300"></span> Média Histórica Climatológica
             </span>
           </div>
         </div>
@@ -396,10 +438,10 @@ export function DashboardPage() {
                       Resolver
                     </button>
                     <button
-                      onClick={() => navigate(`/farms/${alert.farmId}`)}
+                      onClick={() => navigate('/monitoring')}
                       className="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg shadow-2xs transition-colors"
                     >
-                      Ver Parcela
+                      Ver Monitorização
                     </button>
                   </div>
                 </div>
@@ -568,24 +610,27 @@ export function DashboardPage() {
           </div>
         </div>
 
-        {/* Farms Mini Overview (1 col) */}
-        <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-bold text-gray-900">Resumo das Explorações</h3>
+        {/* Regional Agricultural Hubs Overview (1 col) */}
+        <div className="p-5 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs">
+          <div className="flex items-center justify-between mb-3.5">
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">Polos Agrícolas Monitorizados</h3>
+              <p className="text-[11px] text-gray-500">Angola — Huambo, Huíla e Malanje</p>
+            </div>
             <button
-              onClick={() => navigate('/farms')}
-              className="text-xs font-semibold text-[#65A30D] hover:underline"
+              onClick={() => navigate('/map')}
+              className="text-xs font-semibold text-[#65A30D] hover:underline flex items-center gap-1"
             >
-              Gerir
+              <span>Mapa</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {farms.map((farm) => (
               <div
                 key={farm.id}
-                onClick={() => navigate(`/farms/${farm.id}`)}
-                className="p-3 rounded-xl border border-gray-100 hover:border-lime-200 hover:bg-lime-50/40 cursor-pointer transition-all"
+                className="p-3 rounded-xl border border-gray-100 hover:border-lime-200 hover:bg-lime-50/30 transition-all"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-gray-900">{farm.name}</span>
@@ -596,17 +641,17 @@ export function DashboardPage() {
                         : 'bg-amber-100 text-amber-800'
                     }`}
                   >
-                    {farm.status}
+                    {farm.plots.length} talhões
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-[11px] text-gray-500 mt-1">
                   <MapPin className="w-3 h-3 text-[#65A30D]" />
                   <span>
-                    {farm.province} • {farm.areaHectares} ha
+                    {farm.province} ({farm.municipality}) • {farm.areaHectares} ha
                   </span>
                 </div>
                 <div className="mt-2 flex items-center justify-between text-[11px]">
-                  <span className="text-gray-500">Saúde das culturas:</span>
+                  <span className="text-gray-500">Vigor Médio:</span>
                   <span className="font-bold text-[#365314]">{farm.healthScore}%</span>
                 </div>
                 <div className="w-full bg-gray-100 h-1.5 rounded-full mt-1 overflow-hidden">
@@ -614,6 +659,21 @@ export function DashboardPage() {
                     className="bg-[#65A30D] h-full rounded-full transition-all"
                     style={{ width: `${farm.healthScore}%` }}
                   ></div>
+                </div>
+
+                <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between text-[11px]">
+                  <button
+                    onClick={() => navigate('/map')}
+                    className="text-[#65A30D] font-semibold hover:underline"
+                  >
+                    Ver no Mapa
+                  </button>
+                  <button
+                    onClick={() => navigate('/weather')}
+                    className="text-gray-500 hover:text-gray-800"
+                  >
+                    Clima Local &rarr;
+                  </button>
                 </div>
               </div>
             ))}

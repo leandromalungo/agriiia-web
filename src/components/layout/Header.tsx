@@ -12,6 +12,7 @@ import {
   CalendarPlus,
   Download,
   Filter,
+  HelpCircle,
 } from 'lucide-react';
 import { NotificationService } from '../../lib/services/notificationService';
 
@@ -24,6 +25,7 @@ export function Header() {
     refreshData,
     setSearchOpen,
     showToast,
+    setHelpOpen,
   } = useApp();
 
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
@@ -31,9 +33,6 @@ export function Header() {
   // Compute Page Title
   const getPageTitle = () => {
     if (currentPath === '/dashboard') return 'Painel Geral de Controlo';
-    if (currentPath === '/farms') return 'Explorações Agrícolas';
-    if (currentPath === '/farms/new') return 'Registar Nova Exploração';
-    if (currentPath.startsWith('/farms/')) return 'Ficha da Exploração Agrícola';
     if (currentPath === '/map') return 'Cartografia & Satélite';
     if (currentPath === '/monitoring') return 'Monitorização Vegetativa';
     if (currentPath === '/ai-assistant') return 'Assistente Agronómico IA';
@@ -48,17 +47,6 @@ export function Header() {
 
   // Contextual action button
   const renderContextualAction = () => {
-    if (currentPath === '/farms') {
-      return (
-        <button
-          onClick={() => navigate('/farms/new')}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#65A30D] hover:bg-[#558b0a] text-white text-xs font-semibold rounded-xl shadow-xs transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nova Exploração</span>
-        </button>
-      );
-    }
     if (currentPath === '/calendar') {
       return (
         <button
@@ -97,10 +85,10 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-6 py-3.5 flex items-center justify-between">
+    <header className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-5 py-2.5 flex items-center justify-between">
       {/* Left: Breadcrumbs & Page Title */}
       <div className="flex flex-col">
-        <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+        <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-0.5">
           {breadcrumbs.map((crumb, idx) => {
             const isLast = idx === breadcrumbs.length - 1;
             return (
@@ -122,8 +110,8 @@ export function Header() {
             );
           })}
         </nav>
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-gray-900 tracking-tight leading-none">
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-base font-bold text-gray-900 tracking-tight leading-none">
             {getPageTitle()}
           </h1>
           <DemoBadge compact />
@@ -131,17 +119,30 @@ export function Header() {
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {/* Quick Search Bar trigger */}
         <button
           onClick={() => setSearchOpen(true)}
-          className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[#F8FAF5] hover:bg-gray-100/80 border border-[#E5E7EB] text-gray-500 text-xs rounded-xl w-64 text-left transition-all group"
+          className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[#F8FAF5] hover:bg-gray-100/80 border border-[#E5E7EB] text-gray-500 text-xs rounded-xl w-56 text-left transition-all group"
         >
           <Search className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
-          <span className="flex-1 truncate">Pesquisar ou saltar para...</span>
-          <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-gray-400 bg-white border border-gray-200 rounded">
+          <span className="flex-1 truncate">Pesquisar...</span>
+          <kbd className="px-1.5 py-0.5 text-[9px] font-mono text-gray-400 bg-white border border-gray-200 rounded">
             Ctrl+K
           </kbd>
+        </button>
+
+        {/* Contextual Action Button */}
+        {renderContextualAction()}
+
+        {/* Help Guide Button */}
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-[#65A30D] bg-[#F8FAF5] hover:bg-lime-50 border border-gray-200 hover:border-lime-300 rounded-xl transition-all"
+          title="Abrir Manual de Ajuda & Guia Agronómico"
+        >
+          <HelpCircle className="w-4 h-4 text-[#65A30D]" />
+          <span>Ajuda</span>
         </button>
 
         {/* Notifications Icon with popover */}

@@ -68,8 +68,7 @@ export function SearchModal() {
 
   const navigationItems = [
     { label: 'Dashboard Geral', path: '/dashboard', icon: BarChart3, desc: 'Visão executiva e KPIs' },
-    { label: 'Explorações Agrícolas', path: '/farms', icon: Sprout, desc: 'Lista de explorações e cadastro' },
-    { label: 'Mapa Geoespacial', path: '/map', icon: MapPin, desc: 'MapLibre GL com camadas de parcelas' },
+    { label: 'Mapa Geoespacial', path: '/map', icon: MapPin, desc: 'Cartografia com camadas e parcelas' },
     { label: 'Monitorização Vegetativa', path: '/monitoring', icon: Sprout, desc: 'Saúde vegetal, solo e NDVI' },
     { label: 'Assistente Agrícola IA', path: '/ai-assistant', icon: Bot, desc: 'Chatbot agronómico simulado' },
     { label: 'Previsão & Clima', path: '/weather', icon: CloudSun, desc: 'Métricas meteorológicas' },
