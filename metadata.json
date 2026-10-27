@@ -1,0 +1,6 @@
+{
+  "name": "Agriia — Agricultura Inteligente",
+  "description": "Plataforma profissional de agricultura de precisão com IA, dados climáticos, monitorização por satélite e gestão de explorações agrícolas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
